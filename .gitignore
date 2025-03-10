@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 hr_database.db
+hr_database.db-journal
