@@ -1,3 +1,8 @@
+"""Module containing the Department model.
+
+The Department model represents a department in the organization.
+"""
+
 from sqlalchemy import Column, Integer, String
 
 from .base import Base
