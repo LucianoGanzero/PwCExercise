@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from src.pwcexercise.config.db import get_db
-from src.pwcexercise.models.job_title import JobTitle
-from src.pwcexercise.schemas.job_title import JobTitleSchema
+from src.pwcexercise.schemas.job_title import JobTitleCreateSchema, JobTitleSchema
+from src.pwcexercise.services import job_title_service
 
 job_title_router = APIRouter()
 
@@ -20,11 +20,11 @@ def get_job_titles(db: Annotated[Session, Depends(get_db)]) -> list:
         list: A list of all job titles.
 
     """
-    return db.query(JobTitle).all()
+    return job_title_service.get_all_job_titles(db)
 
 @job_title_router.post("/", response_model=JobTitleSchema, tags=["job_titles"])
 def create_job_title(
-            job_title: JobTitleSchema,
+            job_title: JobTitleCreateSchema,
             db: Annotated[Session, Depends(get_db)],
         ) -> dict:
     """Create a new job title in the database.
@@ -37,10 +37,7 @@ def create_job_title(
         dict: The created job title data.
 
     """
-    new_job_title = JobTitle(title=job_title.title)
-    db.add(new_job_title)
-    db.commit()
-    return new_job_title
+    return job_title_service.create_job_title(job_title, db)
 
 @job_title_router.get("/{job_title_id}",
                 response_model=JobTitleSchema,
@@ -56,7 +53,7 @@ def get_job_title(job_title_id: int, db: Annotated[Session, Depends(get_db)]) ->
         dict: The job title data or a 404 response if not found.
 
     """
-    job_title = db.query(JobTitle).filter(JobTitle.id == job_title_id).first()
+    job_title = job_title_service.get_job_title_by_id(job_title_id, db)
     if job_title is None:
         return Response(status_code=HTTP_404_NOT_FOUND)
     return job_title
@@ -66,7 +63,7 @@ def get_job_title(job_title_id: int, db: Annotated[Session, Depends(get_db)]) ->
                 tags=["job_titles"])
 def update_job_title(
             job_title_id: int,
-            job_title: JobTitleSchema,
+            job_title: JobTitleCreateSchema,
             db: Annotated[Session, Depends(get_db)],
         ) -> dict:
     """Update a job title in the database by ID.
@@ -80,12 +77,10 @@ def update_job_title(
         dict: The updated job title data or a 404 response if not found.
 
     """
-    job_title_to_update = db.query(JobTitle).filter(JobTitle.id == job_title_id).first()
-    if job_title_to_update is None:
+    updated_job_title = job_title_service.update_job_title(job_title_id, job_title, db)
+    if updated_job_title is None:
         return Response(status_code=HTTP_404_NOT_FOUND)
-    job_title_to_update.title = job_title.title
-    db.commit()
-    return job_title_to_update
+    return updated_job_title
 
 @job_title_router.delete("/{job_title_id}",
                 status_code=status.HTTP_204_NO_CONTENT,
@@ -104,10 +99,7 @@ def delete_job_title(
         Response: An empty response with a 204 status code.
 
     """
-    job_title = db.query(JobTitle).filter(JobTitle.id == job_title_id).first()
-    if job_title is None:
+    success = job_title_service.delete_job_title(job_title_id, db)
+    if not success:
         return Response(status_code=HTTP_404_NOT_FOUND)
-
-    db.delete(job_title)
-    db.commit()
     return Response(status_code=HTTP_204_NO_CONTENT)
