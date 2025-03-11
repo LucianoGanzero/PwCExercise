@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from src.pwcexercise.config.db import get_db
-from src.pwcexercise.models.performance_review import PerformanceReview
 from src.pwcexercise.schemas.performance_review import (
     PerformanceReviewCreateSchema,
     PerformanceReviewSchema,

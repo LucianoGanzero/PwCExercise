@@ -1,4 +1,5 @@
-from fastapi import HTTPException
+"""Module providing services for managing performance reviews."""
+
 from sqlalchemy.orm import Session
 
 from src.pwcexercise.models.performance_review import PerformanceReview
