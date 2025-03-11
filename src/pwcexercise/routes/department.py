@@ -2,13 +2,12 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from src.pwcexercise.config.db import get_db
-from src.pwcexercise.models.department import Department
-from src.pwcexercise.schemas.department import DepartmentSchema
+from src.pwcexercise.schemas.department import DepartmentCreateSchema, DepartmentSchema
+from src.pwcexercise.services import department_service
 
 department_router = APIRouter()
 
@@ -20,11 +19,11 @@ def get_departments(db: Annotated[Session, Depends(get_db)]) -> list:
         list: A list of all departments.
 
     """
-    return db.query(Department).all()
+    return department_service.get_all_departments(db)
 
 @department_router.post("/", response_model=DepartmentSchema, tags=["departments"])
 def create_department(
-            department: DepartmentSchema,
+            department: DepartmentCreateSchema,
             db: Annotated[Session, Depends(get_db)],
         ) -> dict:
     """Create a new department in the database.
@@ -37,16 +36,13 @@ def create_department(
         dict: The created department data.
 
     """
-    new_department = Department(name=department.name)
-    db.add(new_department)
-    db.commit()
-    return new_department
+    return department_service.create_department(department, db)
 
 @department_router.get("/{department_id}",
                 response_model=DepartmentSchema,
                 tags=["departments"])
 def get_department(department_id: int, db: Annotated[Session, Depends(get_db)]) -> dict:
-    """Retrieve a department from the database by ID.
+    """Retrieve a department by its ID.
 
     Args:
         department_id (int): The ID of the department to retrieve.
@@ -56,9 +52,9 @@ def get_department(department_id: int, db: Annotated[Session, Depends(get_db)]) 
         dict: The department data or a 404 response if not found.
 
     """
-    department = db.query(Department).filter(Department.id == department_id).first()
+    department = department_service.get_department_by_id(department_id, db)
     if department is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=404, detail="Department not found")
     return department
 
 @department_router.put("/{department_id}",
@@ -66,7 +62,7 @@ def get_department(department_id: int, db: Annotated[Session, Depends(get_db)]) 
                 tags=["departments"])
 def update_department(
                 department_id: int,
-                department: DepartmentSchema,
+                department: DepartmentCreateSchema,
                 db: Annotated[Session, Depends(get_db)],
             ) -> dict:
     """Update a department in the database by ID.
@@ -80,12 +76,12 @@ def update_department(
         dict: The updated department data or a 404 response if not found.
 
     """
-    department = db.query(Department).filter(Department.id == department_id).first()
-    if department is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
-    department.name = department.name
-    db.commit()
-    return department
+    updated_department = department_service.update_department(
+                        department_id, department, db,
+                    )
+    if updated_department is None:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    return updated_department
 
 @department_router.delete("/{department_id}",
                 status_code=status.HTTP_204_NO_CONTENT,
@@ -104,9 +100,6 @@ def delete_department(
         Response: An empty response with a 204 status code.
 
     """
-    department = db.query(Department).filter(Department.id == department_id).first()
-    if department is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
-    db.delete(department)
-    db.commit()
-    return Response(status_code=HTTP_204_NO_CONTENT)
+    if department_service.delete_department(department_id, db):
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return Response(status_code=status.HTTP_404_NOT_FOUND)

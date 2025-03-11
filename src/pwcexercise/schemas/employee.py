@@ -10,6 +10,7 @@ from .job_title import JobTitleSchema
 from .performance_review import PerformanceReviewSchema
 from .salary import SalarySchema
 
+
 class EmployeeCreateSchema(BaseModel):
     """Schema for creating employee data (no id or related models)."""
 

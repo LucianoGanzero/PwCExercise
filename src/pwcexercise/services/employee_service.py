@@ -1,4 +1,5 @@
 """Provides services for managing employees in the database."""
+from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
@@ -34,7 +35,7 @@ def create_employee(employee: EmployeeCreateSchema, db: Session) -> Employee:
     db.refresh(new_employee)
     return new_employee
 
-def get_employee_by_id(employee_id: int, db: Session) -> Employee:
+def get_employee_by_id(employee_id: int, db: Session) -> Employee | None:
     """Retrieve an employee by their ID.
 
     :param employee_id: ID of the employee

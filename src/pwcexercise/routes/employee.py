@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from src.pwcexercise.config.db import get_db
@@ -55,8 +55,10 @@ def get_employee(employee_id: int, db: Annotated[Session, Depends(get_db)]) -> d
         dict: The employee data or a 404 response if not found.
 
     """
-    return employee_service.get_employee_by_id(employee_id, db)
-
+    employee = employee_service.get_employee_by_id(employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return employee
 
 @employee.delete("/{employee_id}",
                 status_code=status.HTTP_204_NO_CONTENT,
