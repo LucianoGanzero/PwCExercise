@@ -1,7 +1,6 @@
 """Defines the PerformanceReview model for an employee's performance evaluation."""
 
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
 
 from .base import Base
 

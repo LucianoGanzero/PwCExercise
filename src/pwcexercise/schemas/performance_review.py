@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from datetime import date
 
 from pydantic import BaseModel
 
-from datetime import date
 
 class PerformanceReviewSchema(BaseModel):
     """Schema for performance review data."""
