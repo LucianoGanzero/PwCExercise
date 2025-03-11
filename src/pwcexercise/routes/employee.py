@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
-from src.config.db import get_db
-from src.models.employee import Employee
-from src.schemas.employee import EmployeeSchema
+from src.pwcexercise.config.db import get_db
+from src.pwcexercise.models.employee import Employee
+from src.pwcexercise.schemas.employee import EmployeeSchema
 
 employee = APIRouter()
 

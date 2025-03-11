@@ -3,7 +3,7 @@
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from src.models.base import Base
+from .base import Base
 
 
 class PerformanceReview(Base):
@@ -17,4 +17,3 @@ class PerformanceReview(Base):
     score = Column(Integer, nullable=False)
     comments = Column(String, nullable=True)
 
-    employee = relationship("Employee", backref="performance_reviews")

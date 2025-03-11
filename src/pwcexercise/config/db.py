@@ -3,7 +3,7 @@ from collections.abc import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.models.base import Base
+from src.pwcexercise.models.base import Base
 
 DATABASE_URL = "sqlite:///hr_database.db"
 

@@ -6,9 +6,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
-    from datetime import date
-
+from datetime import date
 
 class PerformanceReviewSchema(BaseModel):
     """Schema for performance review data."""

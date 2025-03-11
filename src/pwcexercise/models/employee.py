@@ -20,5 +20,5 @@ class Employee(Base):
 
     department = relationship("Department", backref="employees")
     job_title = relationship("JobTitle", backref="employees")
-    salaries = relationship("Salary", backref="employee")
-    performance_reviews = relationship("PerformanceReview", backref="employee")
+    salaries = relationship("Salary")
+    performance_reviews = relationship("PerformanceReview")

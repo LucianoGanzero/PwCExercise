@@ -2,11 +2,11 @@
 
 from fastapi import FastAPI
 
-from src.routes.department import department_router
-from src.routes.employee import employee
-from src.routes.job_title import job_title_router
-from src.routes.performance_review import performance_review_router
-from src.routes.salary import salary_router
+from src.pwcexercise.routes.department import department_router
+from src.pwcexercise.routes.employee import employee
+from src.pwcexercise.routes.job_title import job_title_router
+from src.pwcexercise.routes.performance_review import performance_review_router
+from src.pwcexercise.routes.salary import salary_router
 
 app = FastAPI(
     title = "Exercise for PwC",

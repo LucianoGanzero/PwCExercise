@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
-from src.config.db import get_db
-from src.models.performance_review import PerformanceReview
-from src.schemas.performance_review import PerformanceReviewSchema
+from src.pwcexercise.config.db import get_db
+from src.pwcexercise.models.performance_review import PerformanceReview
+from src.pwcexercise.schemas.performance_review import PerformanceReviewSchema
 
 performance_review_router = APIRouter()
 
