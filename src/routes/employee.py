@@ -1,3 +1,5 @@
+"""Module containing routes for employee-related operations."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
@@ -23,7 +25,10 @@ def get_employees(db: Annotated[Session, Depends(get_db)]) -> list:
 
 
 @employee.post("/", response_model=EmployeeSchema, tags=["employees"])
-def create_employee(employee: EmployeeSchema, db: Annotated[Session, Depends(get_db)]) -> dict:
+def create_employee(
+                employee: EmployeeSchema,
+                db: Annotated[Session, Depends(get_db)],
+            ) -> dict:
     """Create a new employee in the database.
 
     Args:
@@ -63,7 +68,10 @@ def get_employee(employee_id: int, db: Annotated[Session, Depends(get_db)]) -> d
 @employee.delete("/{employee_id}",
                 status_code=status.HTTP_204_NO_CONTENT,
                 tags=["employees"])
-def delete_employee(employee_id: int, db: Annotated[Session, Depends(get_db)]) -> Response:
+def delete_employee(
+                employee_id: int,
+                db: Annotated[Session, Depends(get_db)],
+            ) -> Response:
     """Delete an employee from the database by ID.
 
     Args:

@@ -1,3 +1,5 @@
+"""Module containing routes for department-related operations."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status

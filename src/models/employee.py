@@ -1,3 +1,5 @@
+"""Defines the Employee model for the database."""
+
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
 
 from .base import Base

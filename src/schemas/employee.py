@@ -1,3 +1,5 @@
+"""Module containing the schema definition for employee data."""
+
 from datetime import date
 
 from pydantic import BaseModel
@@ -14,5 +16,7 @@ class EmployeeSchema(BaseModel):
     status: str
 
     class Config:
+        """Configuration for the EmployeeSchema."""
+
         orm_mode = True
 
