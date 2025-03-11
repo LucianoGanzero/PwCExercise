@@ -1,7 +1,9 @@
+"""Provides services for managing job titles in the database."""
+
 from sqlalchemy.orm import Session
 
 from src.pwcexercise.models.job_title import JobTitle
-from src.pwcexercise.schemas.job_title import JobTitleCreateSchema, JobTitleSchema
+from src.pwcexercise.schemas.job_title import JobTitleCreateSchema
 
 
 def get_all_job_titles(db: Session) -> list:

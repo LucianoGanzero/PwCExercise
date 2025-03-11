@@ -34,7 +34,7 @@ class EmployeeSchema(BaseModel):
     age: int
     department_id: int
     hire_date: date
-    job_title_id: int
+    job_title_id: int | None = None
     hourly_rate: float
     performance_reviews: list[PerformanceReviewSchema] = []
     salaries: list[SalarySchema] = []

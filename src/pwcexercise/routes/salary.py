@@ -2,13 +2,14 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from src.pwcexercise.config.db import get_db
-from src.pwcexercise.models.salary import Salary
-from src.pwcexercise.schemas.salary import SalarySchema
+from src.pwcexercise.schemas.salary import SalaryCreateSchema, SalarySchema
+from src.pwcexercise.services import salary_service
+from src.pwcexercise.services.employee_service import get_employee_by_id
 
 salary_router = APIRouter()
 
@@ -20,11 +21,11 @@ def get_salaries(db: Annotated[Session, Depends(get_db)]) -> list:
         list: A list of all salaries.
 
     """
-    return db.query(Salary).all()
+    return salary_service.get_all_salaries(db)
 
 @salary_router.post("/", response_model=SalarySchema, tags=["salaries"])
 def create_salary(
-                salary: SalarySchema,
+                salary: SalaryCreateSchema,
                 db: Annotated[Session, Depends(get_db)],
             ) -> dict:
     """Create a new salary in the database.
@@ -37,14 +38,10 @@ def create_salary(
         dict: The created salary data.
 
     """
-    new_salary = Salary(
-                    employee_id=salary.employee_id,
-                    salary_amount=salary.salary_amount,
-                    effective_date=salary.effective_date,
-                )
-    db.add(new_salary)
-    db.commit()
-    return new_salary
+    employee = get_employee_by_id(salary.employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return salary_service.create_salary(salary, db)
 
 @salary_router.get("/{salary_id}",
                 response_model=SalarySchema,
@@ -61,7 +58,7 @@ def get_salary(salary_id: int, db: Annotated[Session, Depends(get_db)]) -> dict:
         dict: The salary data or a 404 response if not found.
 
     """
-    salary = db.query(Salary).filter(Salary.id == salary_id).first()
+    salary = salary_service.get_salary_by_id(salary_id, db)
     if salary is None:
         return Response(status_code=HTTP_404_NOT_FOUND)
     return salary
@@ -69,7 +66,7 @@ def get_salary(salary_id: int, db: Annotated[Session, Depends(get_db)]) -> dict:
 @salary_router.put("/{salary_id}", response_model=SalarySchema, tags=["salaries"])
 def update_salary(
                 salary_id: int,
-                salary: SalarySchema,
+                salary: SalaryCreateSchema,
                 db: Annotated[Session, Depends(get_db)],
             ) -> dict:
     """Update a salary in the database by ID.
@@ -83,9 +80,13 @@ def update_salary(
         dict: The updated salary data or a 404 response if not found.
 
     """
-    db.query(Salary).filter(Salary.id == salary_id).update(salary.dict())
-    db.commit()
-    return db.query(Salary).filter(Salary.id == salary_id).first()
+    employee = get_employee_by_id(salary.employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    updated_job_title = salary_service.update_salary(salary_id, salary, db)
+    if updated_job_title is None:
+        return Response(status_code=HTTP_404_NOT_FOUND)
+    return updated_job_title
 
 @salary_router.delete(
                     "/{salary_id}",
@@ -104,10 +105,7 @@ def delete_salary(salary_id: int, db: Annotated[Session, Depends(get_db)]) -> Re
         Response: An empty response with a 204 status code.
 
     """
-    salary = db.query(Salary).filter(Salary.id == salary_id).first()
-    if salary is None:
+    success = salary_service.delete_salary(salary_id, db)
+    if not success:
         return Response(status_code=HTTP_404_NOT_FOUND)
-
-    db.delete(salary)
-    db.commit()
     return Response(status_code=HTTP_204_NO_CONTENT)
