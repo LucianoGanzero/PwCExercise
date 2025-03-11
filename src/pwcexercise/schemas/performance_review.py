@@ -7,6 +7,19 @@ from datetime import date
 from pydantic import BaseModel
 
 
+class PerformanceReviewCreateSchema(BaseModel):
+    """Schema for performance review creation data."""
+
+    employee_id: int
+    review_date: date
+    score: int
+    comments: str | None = None
+
+    class Config:
+        """Configuration for the PerformanceReviewSchema."""
+
+        orm_mode = True
+
 class PerformanceReviewSchema(BaseModel):
     """Schema for performance review data."""
 

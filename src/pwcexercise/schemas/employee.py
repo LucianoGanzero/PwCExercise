@@ -12,7 +12,7 @@ from .salary import SalarySchema
 
 
 class EmployeeCreateSchema(BaseModel):
-    """Schema for creating employee data (no id or related models)."""
+    """Schema for creating employee data."""
 
     emp_id: str
     age: int

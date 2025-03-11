@@ -2,13 +2,18 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from src.pwcexercise.config.db import get_db
 from src.pwcexercise.models.performance_review import PerformanceReview
-from src.pwcexercise.schemas.performance_review import PerformanceReviewSchema
+from src.pwcexercise.schemas.performance_review import (
+    PerformanceReviewCreateSchema,
+    PerformanceReviewSchema,
+)
+from src.pwcexercise.services import performance_review_service
+from src.pwcexercise.services.employee_service import get_employee_by_id
 
 performance_review_router = APIRouter()
 
@@ -24,7 +29,7 @@ def get_performance_reviews(db: Annotated[Session, Depends(get_db)]) -> list:
         list: A list of all performance reviews.
 
     """
-    return db.query(PerformanceReview).all()
+    return performance_review_service.get_all_performance_reviews(db)
 
 @performance_review_router.post(
                             "/",
@@ -32,7 +37,7 @@ def get_performance_reviews(db: Annotated[Session, Depends(get_db)]) -> list:
                             tags=["performance_reviews"],
                         )
 def create_performance_review(
-            performance_review: PerformanceReviewSchema,
+            performance_review: PerformanceReviewCreateSchema,
             db: Annotated[Session, Depends(get_db)],
         ) -> dict:
     """Create a new performance review in the database.
@@ -45,15 +50,10 @@ def create_performance_review(
         dict: The created performance review data.
 
     """
-    new_performance_review = PerformanceReview(
-        employee_id=performance_review.employee_id,
-        review_date=performance_review.review_date,
-        score=performance_review.score,
-        comments=performance_review.comments,
-    )
-    db.add(new_performance_review)
-    db.commit()
-    return new_performance_review
+    employee = get_employee_by_id(performance_review.employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return performance_review_service.create_performance_review(performance_review, db)
 
 @performance_review_router.get("/{performance_review_id}",
                 response_model=PerformanceReviewSchema,
@@ -72,10 +72,8 @@ def get_performance_review(
         dict: The performance review data or a 404 response if not found.
 
     """
-    performance_review = (
-                        db.query(PerformanceReview)
-                        .filter(PerformanceReview.id == performance_review_id)
-                        .first()
+    performance_review = performance_review_service.get_performance_review_by_id(
+                        performance_review_id, db,
                     )
     if performance_review is None:
         return Response(status_code=HTTP_404_NOT_FOUND)
@@ -86,7 +84,7 @@ def get_performance_review(
                 tags=["performance_reviews"])
 def update_performance_review(
                 performance_review_id: int,
-                performance_review: PerformanceReviewSchema,
+                performance_review: PerformanceReviewCreateSchema,
                 db: Annotated[Session, Depends(get_db)],
             ) -> dict:
     """Update a performance review in the database by ID.
@@ -100,17 +98,12 @@ def update_performance_review(
         dict: The updated performance review data or a 404 response if not found.
 
     """
-    performance_review_data = (
-                        db.query(PerformanceReview)
-                        .filter(PerformanceReview.id == performance_review_id)
-                        .first()
-                    )
-    if performance_review_data is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
-    for key, value in performance_review.dict(exclude_unset=True).items():
-        setattr(performance_review_data, key, value)
-    db.commit()
-    return performance_review_data
+    employee = get_employee_by_id(performance_review.employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return performance_review_service.update_performance_review(
+                performance_review_id, performance_review, db,
+            )
 
 @performance_review_router.delete("/{performance_review_id}",
                 status_code=status.HTTP_204_NO_CONTENT,
@@ -129,14 +122,8 @@ def delete_performance_review(
         Response: An empty response with a 204 status code.
 
     """
-    performance_review = (
-                        db.query(PerformanceReview)
-                        .filter(PerformanceReview.id == performance_review_id)
-                        .first()
-                    )
-    if performance_review is None:
+    success = performance_review_service.delete_performance_review(
+        performance_review_id, db)
+    if not success:
         return Response(status_code=HTTP_404_NOT_FOUND)
-
-    db.delete(performance_review)
-    db.commit()
     return Response(status_code=HTTP_204_NO_CONTENT)
