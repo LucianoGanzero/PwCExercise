@@ -4,11 +4,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 
 from src.pwcexercise.config.db import get_db
-from src.pwcexercise.models.employee import Employee
-from src.pwcexercise.schemas.employee import EmployeeSchema
+from src.pwcexercise.schemas.employee import EmployeeCreateSchema, EmployeeSchema
+from src.pwcexercise.services import employee_service
 
 employee = APIRouter()
 
@@ -21,12 +20,12 @@ def get_employees(db: Annotated[Session, Depends(get_db)]) -> list:
         list: A list of all employees.
 
     """
-    return db.query(Employee).all()
+    return employee_service.get_all_employees(db)
 
 
 @employee.post("/", response_model=EmployeeSchema, tags=["employees"])
 def create_employee(
-                employee: EmployeeSchema,
+                employee: EmployeeCreateSchema,
                 db: Annotated[Session, Depends(get_db)],
             ) -> dict:
     """Create a new employee in the database.
@@ -39,17 +38,7 @@ def create_employee(
         dict: The created employee data.
 
     """
-    new_employee = Employee(
-                    emp_id=employee.emp_id,
-                    age=employee.age,
-                    department_id=employee.department_id,
-                    hire_date=employee.hire_date,
-                    job_title=employee.job_title,
-                    status=employee.status,
-                )
-    db.add(new_employee)
-    db.commit()
-    return new_employee
+    return employee_service.create_employee(employee, db)
 
 
 @employee.get("/{employee_id}",
@@ -66,10 +55,7 @@ def get_employee(employee_id: int, db: Annotated[Session, Depends(get_db)]) -> d
         dict: The employee data or a 404 response if not found.
 
     """
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if employee is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
-    return employee
+    return employee_service.get_employee_by_id(employee_id, db)
 
 
 @employee.delete("/{employee_id}",
@@ -89,13 +75,9 @@ def delete_employee(
         Response: An empty response with a 204 status code.
 
     """
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if employee is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
-
-    db.delete(employee)
-    db.commit()
-    return Response(status_code=HTTP_204_NO_CONTENT)
+    if employee_service.delete_employee(employee_id, db):
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @employee.put("/{employee_id}",
@@ -103,7 +85,7 @@ def delete_employee(
                 tags=["employees"])
 def update_employee(
         employee_id: int,
-        employee: EmployeeSchema,
+        employee: EmployeeCreateSchema,
         db: Annotated[Session, Depends(get_db)]) -> dict:
     """Update an employee in the database by ID.
 
@@ -116,16 +98,7 @@ def update_employee(
         dict: The updated employee data.
 
     """
-    db_employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if db_employee is None:
-        return Response(status_code=HTTP_404_NOT_FOUND)
-
-    db_employee.name = employee.name
-    db_employee.department_id = employee.department_id
-    db_employee.hire_date = employee.hire_date
-    db_employee.job_title = employee.job_title
-    db_employee.status = employee.status
-
-    db.commit()
-    db.refresh(db_employee)
-    return db_employee
+    updated_employee = employee_service.update_employee(employee_id, employee, db)
+    if updated_employee is None:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    return updated_employee
