@@ -39,7 +39,14 @@ def create_employee(
         dict: The created employee data.
 
     """
-    new_employee = Employee(name=employee.name, email=employee.email)
+    new_employee = Employee(
+                    emp_id=employee.emp_id,
+                    age=employee.age,
+                    department_id=employee.department_id,
+                    hire_date=employee.hire_date,
+                    job_title=employee.job_title,
+                    status=employee.status,
+                )
     db.add(new_employee)
     db.commit()
     return new_employee

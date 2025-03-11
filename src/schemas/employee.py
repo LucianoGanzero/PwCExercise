@@ -9,11 +9,12 @@ class EmployeeSchema(BaseModel):
     """Schema for employee data."""
 
     id: int
-    name: str
+    emp_id: str
+    age: int
     department_id: int
     hire_date: date
-    job_title: str
-    status: str
+    job_title_id: int
+    hourly_rate: float
 
     class Config:
         """Configuration for the EmployeeSchema."""
