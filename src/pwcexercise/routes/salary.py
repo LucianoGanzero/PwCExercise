@@ -10,8 +10,10 @@ from src.pwcexercise.config.db import get_db
 from src.pwcexercise.schemas.salary import SalaryCreateSchema, SalarySchema
 from src.pwcexercise.services import salary_service
 from src.pwcexercise.services.employee_service import get_employee_by_id
+from src.pwcexercise.utils.logger import logger
 
 salary_router = APIRouter()
+
 
 @salary_router.get("/", response_model=list[SalarySchema], tags=["salaries"])
 def get_salaries(db: Annotated[Session, Depends(get_db)]) -> list:
@@ -22,6 +24,19 @@ def get_salaries(db: Annotated[Session, Depends(get_db)]) -> list:
 
     """
     return salary_service.get_all_salaries(db)
+
+@salary_router.get("/historic_average", tags=["salaries"])
+def get_historic_average_salary(db: Annotated[Session, Depends(get_db)]) -> dict:
+    """Calculate and return the historic average salary from the database."""
+    historic_average = salary_service.get_historic_average_salary(db)
+    return {"historic_average": historic_average}
+
+@salary_router.get("/current_average", tags=["salaries"])
+def get_current_average_salary(db: Annotated[Session, Depends(get_db)]) -> dict:
+    """Calculate and return the current average salary from the database."""
+    current_average = salary_service.get_current_average_salary(db)
+    return {"current_average": current_average}
+
 
 @salary_router.post("/", response_model=SalarySchema, tags=["salaries"])
 def create_salary(
@@ -109,3 +124,6 @@ def delete_salary(salary_id: int, db: Annotated[Session, Depends(get_db)]) -> Re
     if not success:
         return Response(status_code=HTTP_404_NOT_FOUND)
     return Response(status_code=HTTP_204_NO_CONTENT)
+
+
+

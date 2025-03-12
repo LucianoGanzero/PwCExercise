@@ -30,7 +30,6 @@ def create_employee(employee: EmployeeCreateSchema, db: Session) -> Employee:
         department_id=employee.department_id,
         hire_date=employee.hire_date,
         job_title_id=employee.job_title_id,
-        hourly_rate=employee.hourly_rate,
     )
     db.add(new_employee)
     db.commit()
@@ -63,7 +62,6 @@ def update_employee(
         db_employee.department_id = employee.department_id
         db_employee.hire_date = employee.hire_date
         db_employee.job_title_id = employee.job_title_id
-        db_employee.hourly_rate = employee.hourly_rate
         db.commit()
         db.refresh(db_employee)
     return db_employee
