@@ -1,0 +1,62 @@
+# PwC Exercise
+
+## Overview
+I'm Luciano Ganzero, and this is my implementation of the **Technical Challenge: Backend Developer** for PwC.
+
+This project was built using **FastAPI** for the backend, as required, and **SQLite** as the database to keep the development environment lightweight and minimal.
+
+## Technologies Used
+- FastAPI – A modern, high-performance web framework for building APIs with Python 3.
+- SQLite – A lightweight and self-contained relational database.
+- SQLAlchemy – ORM for database interactions.
+- Alembic – Database migrations tool.
+- Uvicorn – ASGI server for running the FastAPI application.
+- Poetry – Dependency management and packaging.
+- Docker – Containerized deployment.  
+
+## Setup Instructions
+### Prerequisites
+Ensure you have the following installed:
+
+- Python 3.10+
+- git
+- Docker & Docker Compose (for containerized execution)
+- Poetry (for dependency management)
+
+### Local Installation
+1. **Clone the repository**  
+    ```bash
+    git clone git@github.com:LucianoGanzero/PwCExercise.git
+    ```
+2. **Navigate to repository**  
+    ```bash
+    cd pwcexercise
+    ```
+3. **Install dependencies**  
+    ```bash
+    poetry install
+    ```
+4. **Run the application**  
+    ```bash
+    poetry run uvicorn app:app --reload
+    ```
+5. **Optional - You can seed the database**  
+    ```bash
+    poetry run seed-db
+    ```
+
+### Running whit Docker
+The application is dockerized for an easy an uniform use
+1. **Build and start the containers**  
+    ```bash
+    docker compose up --build (optional --watch for following)
+    ```
+    
+
+### Access the API at
+    http://localhost:8000
+
+### API Documentation
+Once the application is running, you can explore the API documentation at:
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
