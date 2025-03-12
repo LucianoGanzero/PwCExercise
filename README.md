@@ -60,6 +60,8 @@ The application is dockerized for an easy an uniform use
 Once the application is running, you can explore the API documentation at:
 - **Swagger UI:** http://localhost:8000/docs
 - **ReDoc:** http://localhost:8000/redoc
+I've also uploaded the .json at **swaggerhub** just in case. The public link is https://app.swaggerhub.com/apis/LucianoGanzero/exercise-for_pw_c/1.0.0
+
 
 ### DATABASE Documentation
 Database diagram can be accesed at:
@@ -69,3 +71,6 @@ Database diagram can be accesed at:
 ### Integration 
 - **Editor Link:** https://www.mermaidchart.com/app/projects/8b7904e6-9f40-4317-baa4-93465a81b0b6/diagrams/e95fb27f-7647-4ff5-b932-763ff20a2b63/version/v0.1/edit
 - **SVG Link:** https://www.mermaidchart.com/raw/e95fb27f-7647-4ff5-b932-763ff20a2b63?theme=light&version=v0.1&format=svg
+
+I've placed both diagrams in the 'diagrams' directory in case the links stop working.
+
