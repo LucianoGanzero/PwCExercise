@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 
 from src.pwcexercise.config.db import get_db
 from src.pwcexercise.schemas.employee import EmployeeCreateSchema, EmployeeSchema
+from src.pwcexercise.schemas.performance_review import PerformanceReviewSchema
+from src.pwcexercise.schemas.salary import SalarySchema
 from src.pwcexercise.services import employee_service
 
 employee = APIRouter()
@@ -104,4 +106,40 @@ def update_employee(
     if updated_employee is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
     return updated_employee
+
+@employee.get("/{employee_id}/active_salary",
+                tags=["employees"])
+def get_active_salary_of_employee(
+                    employee_id: int,
+                    db: Annotated[Session, Depends(get_db)]) -> dict:
+    """Retrieve the active salary of the employee with the given ID."""
+    employee = employee_service.get_employee_by_id(employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    salary = employee_service.get_active_salary(employee_id, db)
+    if salary is None:
+        raise HTTPException(
+            status_code=404,
+            detail="This employee does not have a salary")
+    salary_data = SalarySchema.from_orm(salary)
+
+    return {"active_salary": salary_data.dict()}
+
+@employee.get("/{employee_id}/latest_performance_review",
+                tags=["employees"])
+def get_latest_performance_review_of_employee(
+                employee_id: int,
+                db: Annotated[Session, Depends(get_db)]) -> dict:
+    """Retrieve the latest performance review of the employee with the given ID."""
+    employee = employee_service.get_employee_by_id(employee_id, db)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    performance_review = employee_service.get_latest_performance_review(employee_id, db)
+    if performance_review is None:
+        raise HTTPException(
+            status_code=404,
+            detail="This employee does not have any performance review")
+    performance_data = PerformanceReviewSchema.from_orm(performance_review)
+
+    return {"latest_performance_review": performance_data.dict()}
 

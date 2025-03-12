@@ -4,6 +4,8 @@ from __future__ import annotations
 from sqlalchemy.orm import Session
 
 from src.pwcexercise.models.employee import Employee
+from src.pwcexercise.models.performance_review import PerformanceReview
+from src.pwcexercise.models.salary import Salary
 from src.pwcexercise.schemas.employee import EmployeeCreateSchema, EmployeeSchema
 
 
@@ -79,3 +81,31 @@ def delete_employee(employee_id: int, db: Session) -> bool:
         db.commit()
         return True
     return False
+
+def get_active_salary(employee_id: int, db: Session) -> Salary:
+    """Retrieve the active salary of an employee.
+
+    :param employee_id: ID of the employee
+    :param db: Database session
+    :return: The active salary of the employee
+    """
+    return (
+        db.query(Salary)
+        .filter(Salary.employee_id == employee_id)
+        .order_by(Salary.effective_date.desc())
+        .first()
+    )
+
+def get_latest_performance_review(employee_id: int, db: Session) -> PerformanceReview:
+    """Retrieve the latest performance review of an employee.
+
+    :param employee_id: ID of the employee
+    :param db: Database session
+    :return: The latest performance review of the employee
+    """
+    return (
+        db.query(PerformanceReview)
+        .filter(PerformanceReview.employee_id == employee_id)
+        .order_by(PerformanceReview.review_date.desc())
+        .first()
+    )

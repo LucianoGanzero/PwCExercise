@@ -18,7 +18,7 @@ class PerformanceReviewCreateSchema(BaseModel):
     class Config:
         """Configuration for the PerformanceReviewSchema."""
 
-        orm_mode = True
+        from_attributes = True
 
 class PerformanceReviewSchema(BaseModel):
     """Schema for performance review data."""
@@ -32,4 +32,4 @@ class PerformanceReviewSchema(BaseModel):
     class Config:
         """Configuration for the PerformanceReviewSchema."""
 
-        orm_mode = True
+        from_attributes = True

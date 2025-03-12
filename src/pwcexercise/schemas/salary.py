@@ -16,7 +16,7 @@ class SalaryCreateSchema(BaseModel):
     class Config:
         """Configuration for SalarySchema."""
 
-        orm_mode = True
+        from_attributes = True
 
 class SalarySchema(BaseModel):
     """Schema for salary data."""
@@ -30,4 +30,4 @@ class SalarySchema(BaseModel):
     class Config:
         """Configuration for SalarySchema."""
 
-        orm_mode = True
+        from_attributes = True

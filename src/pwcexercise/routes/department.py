@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from src.pwcexercise.config.db import get_db
 from src.pwcexercise.schemas.department import DepartmentCreateSchema, DepartmentSchema
+from src.pwcexercise.schemas.employee import EmployeeSchema
 from src.pwcexercise.services import department_service
 
 department_router = APIRouter()
@@ -103,6 +104,31 @@ def delete_department(
     if department_service.delete_department(department_id, db):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     return Response(status_code=status.HTTP_404_NOT_FOUND)
+
+@department_router.get("/{department_id}/employees",
+                    response_model=list[EmployeeSchema],
+                    tags=["departments"])
+def get_employees_by_department(
+    department_id: int, db: Annotated[Session, Depends(get_db)]) -> list:
+    """Retrieve all employees associated with a department by ID.
+
+    Args:
+        department_id (int): The ID of the department to retrieve employees for.
+        db (Session): The database session.
+
+    Returns:
+        list: A list of employees associated with the department.
+
+    """
+    department = department_service.get_department_by_id(department_id, db)
+    if department is None:
+        raise HTTPException(status_code=404, detail="Department not found")
+    employees = department_service.get_employees_by_department(department_id, db)
+    if not employees:
+        raise HTTPException(
+            status_code=404,
+            detail="No employees found in this department")
+    return employees
 
 @department_router.get("/{department_id}/medium_salary", tags=["departments"])
 def get_medium_salary_by_id(department_id: int,

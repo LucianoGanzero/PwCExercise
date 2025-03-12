@@ -5,9 +5,8 @@ from sqlalchemy.orm import Session
 
 from src.pwcexercise.models.department import Department
 from src.pwcexercise.models.employee import Employee
-from src.pwcexercise.models.performance_review import PerformanceReview
-from src.pwcexercise.models.salary import Salary
-from src.pwcexercise.schemas.department import DepartmentCreateSchema, DepartmentSchema
+from src.pwcexercise.schemas.department import DepartmentCreateSchema
+from src.pwcexercise.services import employee_service
 
 
 def get_all_departments(db: Session) -> list:
@@ -71,6 +70,10 @@ def delete_department(department_id: int, db: Session) -> bool:
         return True
     return False
 
+def get_employees_by_department(department_id: int, db: Session) -> list:
+    """Retrieve all employees that work in that department."""
+    return db.query(Employee).filter(Employee.department_id == department_id).all()
+
 def get_medium_salary_by_department(department_id: int, db: Session) -> float:
     """Calculate the average salary for a given department.
 
@@ -86,7 +89,7 @@ def get_medium_salary_by_department(department_id: int, db: Session) -> float:
         Returns 0 if there are no employees or no salaries found.
 
     """
-    employees = db.query(Employee).filter(Employee.department_id == department_id).all()
+    employees = get_employees_by_department(department_id, db)
 
     if not employees:
         return 0
@@ -95,9 +98,7 @@ def get_medium_salary_by_department(department_id: int, db: Session) -> float:
     total_employees = 0
 
     for employee in employees:
-        last_salary = db.query(Salary).filter(
-            Salary.employee_id == employee.id,
-        ).order_by(Salary.effective_date.desc()).first()
+        last_salary = employee_service.get_active_salary(employee.id, db)
 
         if last_salary:
             total_salary += last_salary.monthly_income
@@ -121,7 +122,7 @@ def get_average_performance_score_by_department(
         Returns 0 if there are no employees or no performance reviews.
 
     """
-    employees = db.query(Employee).filter(Employee.department_id == department_id).all()
+    employees = get_employees_by_department(department_id, db)
 
     if not employees:
         return 0
@@ -131,9 +132,7 @@ def get_average_performance_score_by_department(
 
 
     for employee in employees:
-        last_review = db.query(PerformanceReview).filter(
-            PerformanceReview.employee_id == employee.id,
-        ).order_by(PerformanceReview.review_date.desc()).first()
+        last_review = employee_service.get_latest_performance_review(employee.id, db)
 
         if last_review:
             total_score += last_review.score
