@@ -103,3 +103,41 @@ def delete_department(
     if department_service.delete_department(department_id, db):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     return Response(status_code=status.HTTP_404_NOT_FOUND)
+
+@department_router.get("/{department_id}/medium_salary", tags=["departments"])
+def get_medium_salary_by_id(department_id: int,
+                            db: Annotated[Session, Depends(get_db)]) -> dict:
+    """Retrieve the average salary of the department with the given ID."""
+    department = department_service.get_department_by_id(department_id, db)
+    if department is None:
+        raise HTTPException(status_code=404, detail="Department not found")
+
+    medium_salary = department_service.get_medium_salary_by_department(
+                                                            department_id,
+                                                            db)
+
+    if medium_salary == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="No employees found in this department")
+
+    return {"department_id": department_id, "medium_salary": medium_salary}
+
+@department_router.get("/{department_id}/average_performance_score",
+                        tags=["departments"])
+def get_average_performance_score_by_id(
+    department_id: int, db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Retrieve the average performance score of the department with the given ID."""
+    department = department_service.get_department_by_id(department_id, db)
+    if department is None:
+        raise HTTPException(status_code=404, detail="Department not found")
+
+    average_score = department_service.get_average_performance_score_by_department(
+        department_id, db)
+
+    if average_score == 0:
+        raise HTTPException(
+            status_code=404, detail="No performance reviews found in this department")
+
+    return {"department_id": department_id, "average_performance_score": average_score}
