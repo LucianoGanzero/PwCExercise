@@ -11,7 +11,7 @@ class DepartmentCreateSchema(BaseModel):
     class Config:
         """Configuration for the DepartmentCreateSchema."""
 
-        orm_mode = True
+        from_attributes = True
 
 class DepartmentSchema(BaseModel):
     """Schema for department data."""
@@ -22,4 +22,4 @@ class DepartmentSchema(BaseModel):
     class Config:
         """Configuration for the DepartmentSchema."""
 
-        orm_mode = True
+        from_attributes = True

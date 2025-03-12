@@ -11,7 +11,7 @@ class JobTitleCreateSchema(BaseModel):
     class Config:
         """Configuration for the JobTitleCreateSchema."""
 
-        orm_mode = True
+        from_attributes = True
 
 class JobTitleSchema(BaseModel):
     """Schema for job title data."""
@@ -22,4 +22,4 @@ class JobTitleSchema(BaseModel):
     class Config:
         """Configuration for the JobTitleSchema."""
 
-        orm_mode = True
+        from_attributes = True

@@ -23,7 +23,7 @@ class EmployeeCreateSchema(BaseModel):
     class Config:
         """Configuration for the EmployeeCreateSchema."""
 
-        orm_mode = True
+        from_attributes = True
 
 class EmployeeSchema(BaseModel):
     """Schema for employee data."""
@@ -43,5 +43,5 @@ class EmployeeSchema(BaseModel):
     class Config:
         """Configuration for the EmployeeSchema."""
 
-        orm_mode = True
+        from_attributes = True
 
