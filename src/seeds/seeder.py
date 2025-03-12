@@ -1,7 +1,7 @@
 """Module with functions to seed the database with initial data."""
 
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -11,6 +11,7 @@ from src.pwcexercise.models.employee import Employee
 from src.pwcexercise.models.job_title import JobTitle
 from src.pwcexercise.models.performance_review import PerformanceReview
 from src.pwcexercise.models.salary import Salary
+from src.pwcexercise.utils.logger import logger
 
 
 def seed_departments(session: Session, df: pd.DataFrame) -> None:
@@ -32,7 +33,7 @@ def seed_employees(session: Session, df: pd.DataFrame) -> None:
     departments = {d.name: d.id for d in session.query(Department).all()}
     job_titles = {j.name: j.id for j in session.query(JobTitle).all()}
     for _, row in df.iterrows():
-        hire_date = datetime.now(tz=datetime.timezone.utc).date() - \
+        hire_date = datetime.now(tz=timezone.utc).date() - \
                     timedelta(days=row["YearsAtCompany"] * 365)
         employee = Employee(
             emp_id=row["EmpID"],
@@ -50,7 +51,7 @@ def seed_salaries(session: Session, df: pd.DataFrame) -> None:
     employees = {e.emp_id: e.id for e in session.query(Employee).all()}
     for _, row in df.iterrows():
         if row["EmpID"] in employees:
-            effective_date = datetime.now(tz=datetime.timezone.utc).date() - \
+            effective_date = datetime.now(tz=timezone.utc).date() - \
                              timedelta(days=row["YearsSinceLastPromotion"] * 365)
             salary = Salary(
                 employee_id=employees[row["EmpID"]],
@@ -67,7 +68,7 @@ def seed_performance_reviews(session: Session, df: pd.DataFrame) -> None:
         if row["EmpID"] in employees:
             review = PerformanceReview(
                 employee_id=employees[row["EmpID"]],
-                review_date=datetime.now(tz=datetime.timezone.utc).date() -
+                review_date=datetime.now(tz=timezone.utc).date() -
                             timedelta(days=secrets.randbelow(365 * 2 - 30) + 30),
                 score=row.get("PerformanceRating", 3),
                 comments="Auto-generated review",
@@ -78,8 +79,13 @@ def seed_performance_reviews(session: Session, df: pd.DataFrame) -> None:
 def seed_database(session: Session, df: pd.DataFrame) -> None:
     """Seed the entire database with initial data."""
     seed_departments(session, df)
+    logger.info("Departments seeded successfully")
     seed_job_titles(session, df)
+    logger.info("Job titles seeded successfully")
     seed_employees(session, df)
+    logger.info("Employees seeded successfully")
     seed_salaries(session, df)
+    logger.info("Salaries seeded successfully")
     seed_performance_reviews(session, df)
+    logger.info("Performance reviews seeded successfully")
 

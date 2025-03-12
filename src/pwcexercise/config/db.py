@@ -9,7 +9,7 @@ from src.pwcexercise.models.base import Base
 
 DATABASE_URL = "sqlite:///hr_database.db"
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 

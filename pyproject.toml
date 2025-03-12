@@ -1,27 +1,22 @@
-[project]
+[tool.poetry]
 name = "pwcexercise"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Your Name",email = "you@example.com"}
-]
+description = "Your project description"
+authors = ["Luciano Ganzero <lucianoganzero94@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.10"
-dependencies = [
-    "fastapi (>=0.115.11,<0.116.0)",
-    "uvicorn (>=0.34.0,<0.35.0)",
-    "sqlalchemy (>=2.0.38,<3.0.0)",
-    "pandas (>=2.2.3,<3.0.0)",
-    "alembic (>=1.15.1,<2.0.0)"
-]
-
-[tool.poetry]
 packages = [{include = "pwcexercise", from = "src"}]
 
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+fastapi = ">=0.115.11,<0.116.0"
+uvicorn = ">=0.34.0,<0.35.0"
+sqlalchemy = ">=2.0.38,<3.0.0"
+pandas = ">=2.2.3,<3.0.0"
+alembic = ">=1.15.1,<2.0.0"
+
+[tool.poetry.scripts]
+seed-db = "pwcexercise.seeds.seed:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-seed-db = "pwcexercise.seeds.seed:main"
