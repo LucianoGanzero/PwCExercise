@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 
 from src.pwcexercise.config.db import SessionLocal, engine
 from src.pwcexercise.models.base import Base
+from src.pwcexercise.seeds.seeds import seed_database
 from src.pwcexercise.utils.logger import logger
-from src.seeds.seeder import seed_database
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 csv_path = BASE_DIR / "HR_Analytics.csv"

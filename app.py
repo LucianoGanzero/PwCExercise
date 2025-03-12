@@ -2,8 +2,6 @@
 
 from fastapi import FastAPI
 
-from src.pwcexercise.config.db import engine
-from src.pwcexercise.models.base import Base
 from src.pwcexercise.routes.department import department_router
 from src.pwcexercise.routes.employee import employee
 from src.pwcexercise.routes.job_title import job_title_router
