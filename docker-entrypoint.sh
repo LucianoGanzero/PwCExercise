@@ -1,4 +1,5 @@
 #!/bin/bash
+poetry run alembic upgrade head
 
 poetry run seed-db
 

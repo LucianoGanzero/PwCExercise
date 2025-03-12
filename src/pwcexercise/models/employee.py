@@ -16,7 +16,6 @@ class Employee(Base):
     department_id = Column(Integer, ForeignKey("departments.id"))
     hire_date = Column(Date)
     job_title_id = Column(Integer, ForeignKey("job_titles.id"))
-    hourly_rate = Column(Float)
 
     department = relationship("Department", backref="employees")
     job_title = relationship("JobTitle", backref="employees")

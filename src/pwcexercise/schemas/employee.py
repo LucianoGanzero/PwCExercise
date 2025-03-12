@@ -19,7 +19,6 @@ class EmployeeCreateSchema(BaseModel):
     department_id: int
     hire_date: date
     job_title_id: int
-    hourly_rate: float
 
     class Config:
         """Configuration for the EmployeeCreateSchema."""
@@ -35,7 +34,6 @@ class EmployeeSchema(BaseModel):
     department_id: int
     hire_date: date
     job_title_id: int | None = None
-    hourly_rate: float
     performance_reviews: list[PerformanceReviewSchema] = []
     salaries: list[SalarySchema] = []
 

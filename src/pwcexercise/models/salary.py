@@ -11,5 +11,6 @@ class Salary(Base):
     __tablename__ = "salaries"
     id = Column(Integer, primary_key=True, autoincrement=True)
     employee_id = Column(Integer, ForeignKey("employees.id"))
-    salary_amount = Column(Float, nullable=False)
+    monthly_income = Column(Float, nullable=False)
+    hourly_rate = Column(Float)
     effective_date = Column(Date, nullable=False)

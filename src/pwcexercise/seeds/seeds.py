@@ -41,7 +41,6 @@ def seed_employees(session: Session, df: pd.DataFrame) -> None:
             department_id=departments.get(row["Department"]),
             hire_date=hire_date,
             job_title_id=job_titles.get(row["JobRole"]),
-            hourly_rate=row["HourlyRate"],
         )
         session.add(employee)
     session.commit()
@@ -55,8 +54,9 @@ def seed_salaries(session: Session, df: pd.DataFrame) -> None:
                              timedelta(days=row["YearsSinceLastPromotion"] * 365)
             salary = Salary(
                 employee_id=employees[row["EmpID"]],
-                salary_amount=row["MonthlyIncome"],
+                monthly_income=row["MonthlyIncome"],
                 effective_date=effective_date,
+                hourly_rate=row["HourlyRate"],
             )
             session.add(salary)
     session.commit()

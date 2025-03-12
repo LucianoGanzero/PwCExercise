@@ -9,8 +9,9 @@ class SalaryCreateSchema(BaseModel):
     """Schema for salary data creation."""
 
     employee_id: int
-    salary_amount: float
+    monthly_income: float
     effective_date: date
+    hourly_rate: float
 
     class Config:
         """Configuration for SalarySchema."""
@@ -22,8 +23,9 @@ class SalarySchema(BaseModel):
 
     id: int
     employee_id: int
-    salary_amount: float
+    monthly_income: float
     effective_date: date
+    hourly_rate: float
 
     class Config:
         """Configuration for SalarySchema."""
