@@ -74,3 +74,23 @@ Database diagram can be accesed at:
 
 I've placed both diagrams in the 'diagrams' directory in case the links stop working.
 
+### Dataset
+The dataset used in this project is located at the root of the project under the name **HR_Analytics.csv**, as requested. It is a public dataset sourced from Kaggle. The link is https://www.kaggle.com/datasets/anshika2301/hr-analytics-dataset
+
+## Requirements
+
+The application is a small simulation of some personnel management at some bussiness. It has five tables (employees, departments, job_titles, salaries and performance_reviews) that are related through the employees, so all the information is, in some way, information about the employees.  
+Departments and job_titles are kind of independent, in the way that both *contain* employees and exist beyond them, but the things you can say about them are, in fact, things about the employees they contain.  
+In addition to implementing CRUD operations for all tables, I have added extra routes to simulate potential client requirements. These include:
+- Retrieve the active or current salary for a employee
+- Retrieve the last performance review for a employee
+- Calculate the aguinaldo for a employee
+- Calculate the amount of hours worked in a month for a employee
+- Retrieve all the employees in a department
+- Calculate the average salary for a department
+- Calculate the average score for the performance reviews of all the employees in a deparment
+- Calculate the average of all the salaries in the history of the bussiness
+- Calculate the average of the current salaries
+- Retrieve all the employees that have the same job title
+- Calculate the average salary for all the employees that have the same job title
+- Calculate the average score for all the performance reviews of the employees with the same job title
